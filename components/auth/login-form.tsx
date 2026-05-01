@@ -6,15 +6,17 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Field, FieldGroup, FieldLabel, FieldError } from '@/components/ui/field'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Spinner } from '@/components/ui/spinner'
+import { Checkbox } from '@/components/ui/checkbox'
 import { AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
@@ -32,74 +34,101 @@ export function LoginForm() {
       })
 
       if (signInError) {
-        setError(signInError.message)
+        if (signInError.message === 'Invalid login credentials') {
+          setError('Credenciales incorrectas. Verifica tu correo y contraseña.')
+        } else {
+          setError(signInError.message)
+        }
         return
       }
 
       router.push('/dashboard')
       router.refresh()
     } catch {
-      setError('Ocurrió un error inesperado')
+      setError('Ocurrio un error inesperado')
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Iniciar Sesión</CardTitle>
-        <CardDescription>
-          Ingresa tus credenciales para acceder al sistema
-        </CardDescription>
+    <Card className="border-0 shadow-lg">
+      <CardHeader className="text-center pb-4">
+        <CardTitle className="text-xl font-semibold">Iniciar Sesion</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Ingrese sus credenciales institucionales
+        </p>
       </CardHeader>
       <form onSubmit={handleSubmit}>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
           <FieldGroup>
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
             <Field>
-              <FieldLabel htmlFor="email">Correo electrónico</FieldLabel>
+              <FieldLabel htmlFor="email">Usuario</FieldLabel>
               <Input
                 id="email"
                 type="email"
-                placeholder="correo@uleam.edu.ec"
+                placeholder="p1314977255@live.uleam.edu.ec"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
+                className="h-11"
               />
             </Field>
+            
             <Field>
-              <FieldLabel htmlFor="password">Contraseña</FieldLabel>
+              <FieldLabel htmlFor="password">Contrasena</FieldLabel>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="••••••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                className="h-11"
               />
             </Field>
           </FieldGroup>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? <Spinner className="mr-2" /> : null}
-            Iniciar Sesión
-          </Button>
-          <p className="text-sm text-muted-foreground text-center">
-            ¿No tienes una cuenta?{' '}
-            <Link href="/auth/registro" className="text-primary hover:underline">
-              Regístrate
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="remember"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              />
+              <label
+                htmlFor="remember"
+                className="text-sm text-muted-foreground cursor-pointer"
+              >
+                Recordarme
+              </label>
+            </div>
+            <Link 
+              href="/auth/recuperar" 
+              className="text-sm text-primary hover:underline"
+            >
+              Olvide mi contrasena?
             </Link>
-          </p>
-        </CardFooter>
+          </div>
+
+          <Button 
+            type="submit" 
+            className="w-full h-11 text-base font-medium" 
+            disabled={isLoading}
+          >
+            {isLoading ? <Spinner className="mr-2" /> : null}
+            Iniciar Sesion
+          </Button>
+        </CardContent>
       </form>
     </Card>
   )

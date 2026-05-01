@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import { Plus, FileText, Eye, Edit, Filter } from 'lucide-react'
+import { Plus, FileText, Eye, Edit } from 'lucide-react'
 import { STATUS_LABELS, STATUS_COLORS, type RequestStatus } from '@/lib/types'
 import { RequestsFilter } from '@/components/requests/requests-filter'
 
